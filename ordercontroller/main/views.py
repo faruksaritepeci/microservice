@@ -1,5 +1,6 @@
 # Global Imports
 import requests
+import json
 
 ## Django libs
 from django.shortcuts import render, redirect
@@ -7,6 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpRequest, HttpRes
 from django.views.decorators.csrf import csrf_protect
 from django.core import serializers
 from django.db.models import Q
+from django.forms.models import model_to_dict
 
 ## Rest Framework libs
 from rest_framework.views import APIView
@@ -53,23 +55,34 @@ class PostOrderFilter(APIView):
         startIndex = searchFilter["PageSize"] * (searchFilter["PageNumber"] - 1)
         endIndex = startIndex + searchFilter["PageSize"]
         
+        """
         page = Order.objects.filter(CustomerName__contains = searchFilter["SearchText"]
                             ).filter(CreatedOn__gt = searchFilter["StartDate"]
                             ).filter(CreatedOn__lt = searchFilter["EndDate"]
                             ).filter(Q(Status = 10) | Q(Status = 20)
                             ).order_by(searchFilter["SortBy"]
                                 
-                            )[startIndex: endIndex]   
+                            )[startIndex: endIndex]  
+        """ 
+           
+        page = Order.objects.filter(CustomerName__contains = searchFilter["SearchText"]
+                            ).filter(CreatedOn__gt = searchFilter["StartDate"]
+                            ).filter(CreatedOn__lt = searchFilter["EndDate"]
                             
+                            ).order_by(searchFilter["SortBy"]
+                                
+                            )[startIndex: endIndex]      
+        print(len(page))                
         
-        orderSerializer = OrderSerializer(data=page, many=True)
-        orderSerializer.is_valid(raise_exception=False)
         
+        """
         responsetext = "["
-        for item in orderSerializer.validated_data:
-            responsetext += str(item) + ",\n"
+        for item in page:
+            responsetext += str(model_to_dict(item)) + ",\n"
         
         responsetext += "]"
+        """
         
+        responsetext = json.loads(serializers.serialize('json', page))
         #return Response(orderSerializer.data)
         return Response(responsetext)
