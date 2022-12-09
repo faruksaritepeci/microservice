@@ -55,33 +55,21 @@ class PostOrderFilter(APIView):
         startIndex = searchFilter["PageSize"] * (searchFilter["PageNumber"] - 1)
         endIndex = startIndex + searchFilter["PageSize"]
         
-        """
-        page = Order.objects.filter(CustomerName__contains = searchFilter["SearchText"]
+        statusOR = Q(Status= searchFilter["Statuses"][0])
+        for i in range(1, len(searchFilter["Statuses"])):
+            statusOR |= Q(Status= searchFilter["Statuses"][i])
+            
+        searchOR = Q(CustomerName__contains= searchFilter["SearchText"]) | Q(StoreName__contains= searchFilter["SearchText"])
+        
+        page = Order.objects.filter(searchOR
                             ).filter(CreatedOn__gt = searchFilter["StartDate"]
                             ).filter(CreatedOn__lt = searchFilter["EndDate"]
-                            ).filter(Q(Status = 10) | Q(Status = 20)
+                            ).filter(statusOR
                             ).order_by(searchFilter["SortBy"]
                                 
                             )[startIndex: endIndex]  
-        """ 
-           
-        page = Order.objects.filter(CustomerName__contains = searchFilter["SearchText"]
-                            ).filter(CreatedOn__gt = searchFilter["StartDate"]
-                            ).filter(CreatedOn__lt = searchFilter["EndDate"]
-                            
-                            ).order_by(searchFilter["SortBy"]
-                                
-                            )[startIndex: endIndex]      
-        print(len(page))                
         
-        
-        """
-        responsetext = "["
-        for item in page:
-            responsetext += str(model_to_dict(item)) + ",\n"
-        
-        responsetext += "]"
-        """
+       
         
         responsetext = json.loads(serializers.serialize('json', page))
         #return Response(orderSerializer.data)
