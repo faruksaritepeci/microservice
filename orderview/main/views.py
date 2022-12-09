@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # Local Imports
 
+
 # Static urlbook for now, will convert to dynamic via, ip_address_register
 urlbook = [
     {"serverType": "ip_address_register", "serverURL": "127.0.0.1:8000"},
@@ -23,40 +24,19 @@ urlbook = [
 ]
     
 
-### REAL API INTERFACE FOR CLIENT
+### REAL API INTERFACE FOR OTHER SERVICES
 
-class AddOrders(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    
+class PostSearch(APIView):
     
     def post(self, request):
-        
         ordercontrollerIP = None
         for server in urlbook:
             if server["serverType"] == "ordercontroller":
                 ordercontrollerIP = server["serverURL"]
         if ordercontrollerIP == None:
-            return Response(status=404)        
-        APIresponse = requests.post("http://" + ordercontrollerIP + "/api/postorder", request.body, headers={'content-type': 'application/json'})
-        
-        return Response(APIresponse.status_code)
-    
-    
-class SearchOrders(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    
-    
-    def post(self, request):
-        orderviewIP = None
-        for server in urlbook:
-            if server["serverType"] == "orderview":
-                orderviewIP = server["serverURL"]
-        if orderviewIP == None:
             return Response(status=404)
                 
-        APIresponse = requests.post("http://" + orderviewIP + "/api/postsearch", request.body, headers={'content-type': 'application/json'})
+        APIresponse = requests.post("http://" + ordercontrollerIP + "/api/postorderfilter", request.body, headers={'content-type': 'application/json'})
         
         django_response = HttpResponse(
         content=APIresponse.content,
@@ -65,4 +45,4 @@ class SearchOrders(APIView):
         )
 
         return django_response
-    
+        
