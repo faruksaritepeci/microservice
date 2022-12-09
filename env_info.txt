@@ -1,0 +1,10 @@
+OS: Windows 10 Pro 21H2 Build 19044.2251
+CPU: Intel 8th Gen AMD64 Processor
+
+python: 3.11.0
+
+django: 4.1.4
+djangorestframework: 3.14.0
+requests: 2.28.1
+
+PostgreSQL: 15.1
