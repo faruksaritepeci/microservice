@@ -15,19 +15,31 @@ If secret keys are not present, you should issue keys and place in base director
 
 Holds ip's of all microservices so microservices can get location of other services
 
-### Load Balancer
+### Load Balancer (Currently Not Used)
 
 Balances the load between 3 Api Gateways
 
 ### API Gateway
 
-Transfers requests to related micro-services
+Transfers requests to related micro-services: Order Controller and Order View
+
+### Order Controller
+
+Manages data manupilation of the "Order" database. Adds orders and performs searches
+
+### Order View
+
+Sends search request to order controller and performs format on the response before sending it back to the client.
 
 ## Issues
 
-### Not Functional
+### Load Balancer is Off at the Moment
 
-Only IP Address Register is working atm through post/get requests.
+Ability to use nginx or custom load_balancer microservice is not yet ready
+
+### Search return format might not be correct
+
+The format currently contains extra details on return such as primary key.
 
 ## Coming Features
 
@@ -46,4 +58,4 @@ Provide safe interaction for the user using secured channel with AES encryption
 
 ## API Documentation
 
-Coming Soon!
+<https://documenter.getpostman.com/view/24756699/2s8YzS1j4o>
